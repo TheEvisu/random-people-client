@@ -42,24 +42,35 @@ export function HistoryPage() {
       </div>
 
       {!serverUp && (
-        <p className="text-destructive">Backend is unavailable. Try again later.</p>
+        <p className="text-destructive">
+          The server isn't responding right now. Come back in a moment.
+        </p>
       )}
       {serverUp && !dbUp && (
-        <p className="text-destructive">Database is unavailable. Try again later.</p>
+        <p className="text-destructive">
+          The database is temporarily down. Your saved profiles will be back soon.
+        </p>
       )}
 
       {available && (
         <>
           <FilterBar />
-          {isLoading && <p className="text-muted-foreground">Loading...</p>}
-          {isError && <p className="text-destructive">Failed to load profiles.</p>}
+          {isLoading && <p className="text-muted-foreground">Loading your profiles...</p>}
+          {isError && (
+            <p className="text-destructive">Something went wrong loading your profiles.</p>
+          )}
           {!isLoading && !isError && (
             <Card>
               {filtered.map((p) => (
                 <ProfileRow key={p.id} profile={p} onClick={() => handleClick(p.id)} />
               ))}
-              {filtered.length === 0 && (
-                <p className="p-4 text-muted-foreground">No saved profiles.</p>
+              {filtered.length === 0 && data && data.length === 0 && (
+                <p className="p-4 text-muted-foreground">
+                  Nothing saved yet. Go fetch some people and save the ones you like.
+                </p>
+              )}
+              {filtered.length === 0 && data && data.length > 0 && (
+                <p className="p-4 text-muted-foreground">No one matches your filters.</p>
               )}
             </Card>
           )}

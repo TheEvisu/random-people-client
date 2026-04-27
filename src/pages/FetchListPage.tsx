@@ -43,15 +43,19 @@ export function FetchListPage() {
         <h1 className="text-2xl font-bold">Random People</h1>
       </div>
       <FilterBar />
-      {isLoading && <p className="text-muted-foreground">Loading...</p>}
-      {isError && <p className="text-destructive">Failed to load users.</p>}
+      {isLoading && <p className="text-muted-foreground">Fetching people...</p>}
+      {isError && (
+        <p className="text-destructive">
+          Couldn't load users right now. Check your connection and try again.
+        </p>
+      )}
       {!isLoading && !isError && (
         <Card>
           {filtered.map((p) => (
             <ProfileRow key={p.id} profile={p} onClick={() => handleClick(p.id)} />
           ))}
           {filtered.length === 0 && (
-            <p className="p-4 text-muted-foreground">No results.</p>
+            <p className="p-4 text-muted-foreground">No one matches your filters.</p>
           )}
         </Card>
       )}

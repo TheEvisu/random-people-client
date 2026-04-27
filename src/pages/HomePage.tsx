@@ -33,7 +33,7 @@ export function HomePage() {
           variant="secondary"
           onClick={handleHistory}
           disabled={!backendAvailable}
-          title={!backendAvailable ? 'Service unavailable' : undefined}
+          title={!backendAvailable ? 'Server is unavailable right now' : undefined}
         >
           History
         </Button>

@@ -55,7 +55,7 @@ export function ProfilePage() {
   if (!selected) return null;
 
   if (!profile) {
-    return <p className="p-8 text-muted-foreground">Loading...</p>;
+    return <p className="p-8 text-muted-foreground">Loading profile...</p>;
   }
 
   const source = selected.source;
@@ -98,7 +98,8 @@ export function ProfilePage() {
   }
 
   const saveDisabled = saved || isSaving || !backendAvailable;
-  const saveTitle = !backendAvailable ? 'Service unavailable' : undefined;
+  const saveTitle = !backendAvailable ? "Server is unreachable - can't save right now" : undefined;
+  const mutateTitle = !backendAvailable ? "Server is unreachable - can't make changes right now" : undefined;
 
   return (
     <div className="max-w-xl mx-auto p-6">
@@ -167,7 +168,7 @@ export function ProfilePage() {
                   variant="destructive"
                   onClick={handleDelete}
                   disabled={isDeleting || !backendAvailable}
-                  title={!backendAvailable ? 'Service unavailable' : undefined}
+                  title={mutateTitle}
                 >
                   {isDeleting ? 'Deleting...' : 'Delete'}
                 </Button>
@@ -175,7 +176,7 @@ export function ProfilePage() {
                   variant="outline"
                   onClick={handleUpdate}
                   disabled={isUpdating || !backendAvailable}
-                  title={!backendAvailable ? 'Service unavailable' : undefined}
+                  title={mutateTitle}
                 >
                   {isUpdating ? 'Updating...' : 'Update'}
                 </Button>
