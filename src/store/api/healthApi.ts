@@ -7,7 +7,7 @@ interface HealthResponse {
 
 export const healthApi = createApi({
   reducerPath: 'healthApi',
-  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_URL }),
+  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_URL ?? 'http://localhost:4000' }),
   endpoints: (builder) => ({
     getHealth: builder.query<HealthResponse, void>({
       query: () => '/api/health',

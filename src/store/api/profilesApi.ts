@@ -14,7 +14,7 @@ function mapDbProfile(p: DbProfile): Profile {
 
 export const profilesApi = createApi({
   reducerPath: 'profilesApi',
-  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_URL }),
+  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_URL ?? 'http://localhost:4000' }),
   tagTypes: ['Profile'],
   endpoints: (builder) => ({
     getProfiles: builder.query<Profile[], void>({
