@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { useAppDispatch, useAppSelector, useHealth } from '../store/hooks';
 import { clearSelected, updateRandomProfile } from '../store/slices/profilesSlice';
 import {
   useSaveProfileMutation,
@@ -20,8 +20,12 @@ export function ProfilePage() {
 
   const selected = useAppSelector((s) => s.profiles.selected);
   const randomList = useAppSelector((s) => s.profiles.randomList);
+  const { serverUp, dbUp } = useHealth();
+
+  const backendAvailable = serverUp && dbUp;
+
   const { data: dbProfiles } = useGetProfilesQuery(undefined, {
-    skip: selected?.source !== 'db',
+    skip: selected?.source !== 'db' || !backendAvailable,
   });
 
   const [saveProfile, { isLoading: isSaving }] = useSaveProfileMutation();
@@ -93,6 +97,9 @@ export function ProfilePage() {
     navigate('/history');
   }
 
+  const saveDisabled = saved || isSaving || !backendAvailable;
+  const saveTitle = !backendAvailable ? 'Service unavailable' : undefined;
+
   return (
     <div className="max-w-xl mx-auto p-6">
       <div className="flex items-center gap-4 mb-6">
@@ -144,7 +151,8 @@ export function ProfilePage() {
                 <Button
                   variant="secondary"
                   onClick={handleSave}
-                  disabled={saved || isSaving}
+                  disabled={saveDisabled}
+                  title={saved ? undefined : saveTitle}
                 >
                   {saved ? 'Saved' : isSaving ? 'Saving...' : 'Save'}
                 </Button>
@@ -158,14 +166,16 @@ export function ProfilePage() {
                 <Button
                   variant="destructive"
                   onClick={handleDelete}
-                  disabled={isDeleting}
+                  disabled={isDeleting || !backendAvailable}
+                  title={!backendAvailable ? 'Service unavailable' : undefined}
                 >
                   {isDeleting ? 'Deleting...' : 'Delete'}
                 </Button>
                 <Button
                   variant="outline"
                   onClick={handleUpdate}
-                  disabled={isUpdating}
+                  disabled={isUpdating || !backendAvailable}
+                  title={!backendAvailable ? 'Service unavailable' : undefined}
                 >
                   {isUpdating ? 'Updating...' : 'Update'}
                 </Button>

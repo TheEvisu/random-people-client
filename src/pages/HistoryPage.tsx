@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useGetProfilesQuery } from '../store/api/profilesApi';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { useAppDispatch, useAppSelector, useHealth } from '../store/hooks';
 import { setSelected } from '../store/slices/profilesSlice';
 import { ProfileRow } from '../components/ProfileRow';
 import { FilterBar } from '../components/FilterBar';
@@ -10,8 +10,14 @@ import { Card } from '../components/ui/card';
 export function HistoryPage() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { data, isLoading, isError } = useGetProfilesQuery();
+  const { serverUp, dbUp } = useHealth();
   const filter = useAppSelector((s) => s.profiles.filter);
+
+  const available = serverUp && dbUp;
+
+  const { data, isLoading, isError } = useGetProfilesQuery(undefined, {
+    skip: !available,
+  });
 
   const filtered = (data ?? []).filter((p) => {
     const nameMatch = `${p.firstName} ${p.lastName}`
@@ -34,18 +40,30 @@ export function HistoryPage() {
         </Button>
         <h1 className="text-2xl font-bold">Saved Profiles</h1>
       </div>
-      <FilterBar />
-      {isLoading && <p className="text-muted-foreground">Loading...</p>}
-      {isError && <p className="text-destructive">Failed to load profiles.</p>}
-      {!isLoading && !isError && (
-        <Card>
-          {filtered.map((p) => (
-            <ProfileRow key={p.id} profile={p} onClick={() => handleClick(p.id)} />
-          ))}
-          {filtered.length === 0 && (
-            <p className="p-4 text-muted-foreground">No saved profiles.</p>
+
+      {!serverUp && (
+        <p className="text-destructive">Backend is unavailable. Try again later.</p>
+      )}
+      {serverUp && !dbUp && (
+        <p className="text-destructive">Database is unavailable. Try again later.</p>
+      )}
+
+      {available && (
+        <>
+          <FilterBar />
+          {isLoading && <p className="text-muted-foreground">Loading...</p>}
+          {isError && <p className="text-destructive">Failed to load profiles.</p>}
+          {!isLoading && !isError && (
+            <Card>
+              {filtered.map((p) => (
+                <ProfileRow key={p.id} profile={p} onClick={() => handleClick(p.id)} />
+              ))}
+              {filtered.length === 0 && (
+                <p className="p-4 text-muted-foreground">No saved profiles.</p>
+              )}
+            </Card>
           )}
-        </Card>
+        </>
       )}
     </div>
   );
