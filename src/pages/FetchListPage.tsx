@@ -5,15 +5,23 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { setRandomList, setSelected } from '../store/slices/profilesSlice';
 import { ProfileRow } from '../components/ProfileRow';
 import { FilterBar } from '../components/FilterBar';
+import { SkeletonRow } from '../components/SkeletonRow';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
+import { useDebounce } from '../hooks/useDebounce';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 export function FetchListPage() {
+  usePageTitle('Fetch');
+
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { data, isLoading, isError } = useGetRandomUsersQuery();
   const filter = useAppSelector((s) => s.profiles.filter);
   const randomList = useAppSelector((s) => s.profiles.randomList);
+
+  const debouncedName = useDebounce(filter.name);
+  const debouncedCountry = useDebounce(filter.country);
 
   useEffect(() => {
     if (data) dispatch(setRandomList(data));
@@ -24,8 +32,8 @@ export function FetchListPage() {
   const filtered = displayList.filter((p) => {
     const nameMatch = `${p.firstName} ${p.lastName}`
       .toLowerCase()
-      .includes(filter.name.toLowerCase());
-    const countryMatch = p.country.toLowerCase().includes(filter.country.toLowerCase());
+      .includes(debouncedName.toLowerCase());
+    const countryMatch = p.country.toLowerCase().includes(debouncedCountry.toLowerCase());
     return nameMatch && countryMatch;
   });
 
@@ -43,22 +51,25 @@ export function FetchListPage() {
         <h1 className="text-2xl font-bold">Random People</h1>
       </div>
       <FilterBar />
-      {isLoading && <p className="text-muted-foreground">Fetching people...</p>}
       {isError && (
         <p className="text-destructive">
           Couldn't load users right now. Check your connection and try again.
         </p>
       )}
-      {!isLoading && !isError && (
-        <Card>
-          {filtered.map((p) => (
-            <ProfileRow key={p.id} profile={p} onClick={() => handleClick(p.id)} />
-          ))}
-          {filtered.length === 0 && (
-            <p className="p-4 text-muted-foreground">No one matches your filters.</p>
-          )}
-        </Card>
-      )}
+      <Card>
+        {isLoading &&
+          Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)}
+        {!isLoading && !isError && (
+          <>
+            {filtered.map((p) => (
+              <ProfileRow key={p.id} profile={p} onClick={() => handleClick(p.id)} />
+            ))}
+            {filtered.length === 0 && (
+              <p className="p-4 text-muted-foreground">No one matches your filters.</p>
+            )}
+          </>
+        )}
+      </Card>
     </div>
   );
 }

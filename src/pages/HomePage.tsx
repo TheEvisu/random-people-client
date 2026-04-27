@@ -1,10 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
-import { useAppDispatch } from '../store/hooks';
-import { useHealth } from '../store/hooks';
+import { useAppDispatch, useHealth } from '../store/hooks';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { clearSelected } from '../store/slices/profilesSlice';
 
 export function HomePage() {
+  usePageTitle('Home');
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { serverUp, dbUp } = useHealth();
