@@ -1,7 +1,7 @@
-import { ButtonHTMLAttributes, forwardRef } from 'react';
+import { ComponentProps } from 'react';
 import { cn } from '../../lib/utils';
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends ComponentProps<'button'> {
   variant?: 'default' | 'secondary' | 'destructive' | 'outline' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
 }
@@ -22,10 +22,9 @@ const sizeClasses: Record<NonNullable<ButtonProps['size']>, string> = {
   lg: 'px-6 py-3 text-base',
 };
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = 'default', size = 'md', ...props }, ref) => (
+export function Button({ className, variant = 'default', size = 'md', ...props }: ButtonProps) {
+  return (
     <button
-      ref={ref}
       className={cn(
         'inline-flex items-center justify-center rounded-lg font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 disabled:pointer-events-none',
         variantClasses[variant],
@@ -34,6 +33,5 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       )}
       {...props}
     />
-  )
-);
-Button.displayName = 'Button';
+  );
+}

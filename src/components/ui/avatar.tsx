@@ -1,7 +1,7 @@
-import { ImgHTMLAttributes } from 'react';
+import { ComponentProps } from 'react';
 import { cn } from '../../lib/utils';
 
-interface AvatarProps extends ImgHTMLAttributes<HTMLImageElement> {
+interface AvatarProps extends ComponentProps<'img'> {
   size?: 'sm' | 'md' | 'lg';
 }
 
@@ -14,11 +14,7 @@ const sizeMap: Record<NonNullable<AvatarProps['size']>, string> = {
 export function Avatar({ className, size = 'md', alt = '', ...props }: AvatarProps) {
   return (
     <img
-      className={cn(
-        'rounded-full object-cover border border-border',
-        sizeMap[size],
-        className
-      )}
+      className={cn('rounded-full object-cover border border-border', sizeMap[size], className)}
       alt={alt}
       {...props}
     />
